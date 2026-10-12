@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat with Noxxy, your bold and cheerful AI assistant.">
+    <link rel="icon" type="image/png" href="https://img1.pixhost.to/images/5552/595723529_faykal.png">
+    <title>Noxxy AI — Your Bold AI Buddy</title>
+    <style>
+        :root {
+            --ink: #111111;
+            --paper: #fff8e7;
+            --surface: #ffffff;
+            --muted: #eee7d4;
+            --purple: #9b7bff;
+            --yellow: #ffd84d;
+            --pink: #ff6fb5;
+            --cyan: #66e3ff;
+            --green: #7ee081;
+            --border: 3px solid var(--ink);
+            --shadow: 7px 7px 0 var(--ink);
+            --shadow-small: 4px 4px 0 var(--ink);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 24px;
+            color: var(--ink);
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--paper);
+            background-image: radial-gradient(var(--ink) 1px, transparent 1px);
+            background-size: 22px 22px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .dark-theme {
+            --ink: #f7f4ea;
+            --paper: #181622;
+            --surface: #272335;
+            --muted: #373147;
+            --purple: #a88cff;
+            --yellow: #ffdd55;
+            --pink: #ff79ba;
+            --cyan: #72e5ff;
+            --green: #89e88c;
+        }
+
+        .light-theme {
+            --ink: #111111;
+            --paper: #fff8e7;
+            --surface: #ffffff;
+            --muted: #eee7d4;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 780px;
+            min-height: calc(100vh - 48px);
+            min-height: calc(100dvh - 48px);
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 22px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            min-height: 52px;
+            padding: 10px 16px;
+            color: #111111;
+            background: var(--yellow);
+            border: var(--border);
+            box-shadow: var(--shadow-small);
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            transform: rotate(-1deg);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            color: #111111;
+            background: var(--cyan);
+            border: var(--border);
+            box-shadow: var(--shadow-small);
+            cursor: pointer;
+            font-size: 22px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .theme-toggle:hover,
+        .send-button:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--ink);
+        }
+
+        .theme-toggle:active,
+        .send-button:active {
+            transform: translate(3px, 3px);
+            box-shadow: 1px 1px 0 var(--ink);
+        }
+
+        .theme-toggle:focus-visible,
+        .send-button:focus-visible,
+        .input-field:focus-visible {
+            outline: 4px solid var(--pink);
+            outline-offset: 3px;
+        }
+
+        .welcome {
+            position: relative;
+            margin: 8px 0 30px;
+            padding: 42px 34px 36px;
+            overflow: hidden;
+            color: #111111;
+            background: var(--purple);
+            border: var(--border);
+            box-shadow: var(--shadow);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+
+        .welcome::before {
+            position: absolute;
+            top: 15px;
+            right: -42px;
+            width: 170px;
+            padding: 7px 0;
+            content: "AI POWERED";
+            background: var(--yellow);
+            border: 2px solid #111111;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-align: center;
+            transform: rotate(35deg);
+        }
+
+        .welcome h1 {
+            max-width: 620px;
+            margin-bottom: 14px;
+            font-size: clamp(42px, 9vw, 76px);
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -0.075em;
+            text-transform: uppercase;
+        }
+
+        .welcome h1 span {
+            display: inline-block;
+        }
+
+        .welcome h1 .highlight-2 {
+            padding: 2px 10px 7px;
+            background: var(--pink);
+            border: 3px solid #111111;
+            box-shadow: 5px 5px 0 #111111;
+            transform: rotate(1deg);
+        }
+
+        .welcome p {
+            max-width: 500px;
+            font-size: clamp(17px, 3vw, 21px);
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .chat-container {
+            flex: 1;
+            max-height: 48vh;
+            padding: 4px 8px 18px 4px;
+            overflow-y: auto;
+            scrollbar-color: var(--pink) var(--muted);
+        }
+
+        .message {
+            width: fit-content;
+            max-width: 82%;
+            margin-bottom: 20px;
+            padding: 14px 17px;
+            border: var(--border);
+            box-shadow: var(--shadow-small);
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.55;
+            overflow-wrap: anywhere;
+        }
+
+        .user-message {
+            margin-left: auto;
+            color: #111111;
+            background: var(--cyan);
+        }
+
+        .bot-message {
+            margin-right: auto;
+            color: #111111;
+            background: var(--green);
+        }
+
+        .typing-indicator {
+            display: none;
+            width: fit-content;
+            margin-right: auto;
+            margin-bottom: 18px;
+            padding: 11px 14px;
+            background: var(--yellow);
+            border: var(--border);
+            box-shadow: var(--shadow-small);
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            margin-right: 4px;
+            background: #111111;
+            border-radius: 50%;
+            animation: typing 1s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            margin-right: 0;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .chat-input {
+            position: relative;
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 12px;
+        }
+
+        .input-field {
+            width: 100%;
+            min-width: 0;
+            height: 58px;
+            padding: 0 18px;
+            color: var(--ink);
+            background: var(--surface);
+            border: var(--border);
+            border-radius: 0;
+            box-shadow: var(--shadow-small);
+            font-size: 16px;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .input-field::placeholder {
+            color: var(--ink);
+            opacity: 0.55;
+        }
+
+        .send-button {
+            display: flex;
+            flex: 0 0 64px;
+            align-items: center;
+            justify-content: center;
+            height: 58px;
+            color: #111111;
+            background: var(--pink);
+            border: var(--border);
+            border-radius: 0;
+            box-shadow: var(--shadow-small);
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: 900;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .footer {
+            padding: 24px 0 4px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .message p {
+            margin-bottom: 5px;
+        }
+
+        .message p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message code {
+            padding: 2px 5px;
+            color: #111111;
+            background: #ffffff;
+            border: 1px solid #111111;
+            font-family: Consolas, monospace;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+                background-size: 18px 18px;
+            }
+
+            .container {
+                min-height: calc(100vh - 32px);
+                min-height: calc(100dvh - 32px);
+            }
+
+            .welcome {
+                margin-bottom: 24px;
+                padding: 36px 22px 28px;
+                box-shadow: 5px 5px 0 var(--ink);
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .chat-container {
+                max-height: 43vh;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="dark-theme">
+    <main class="container">
+        <header class="header">
+            <div class="brand">
+                <span aria-hidden="true">✦</span>Noxxy AI
+            </div>
+            <button class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Switch to light theme">
+                <span aria-hidden="true">☀</span>
+            </button>
+        </header>
+
+        <section class="welcome" id="welcomeSection">
+            <h1><span class="highlight-1">Welcome</span> <span class="highlight-2">Back!</span></h1>
+            <p>How can I assist you today?</p>
+        </section>
+
+        <section class="chat-container" id="chatContainer" aria-live="polite" aria-label="Chat messages">
+            <div class="typing-indicator" id="typingIndicator" aria-label="Noxxy is typing">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </section>
+
+        <form class="chat-input" id="chatForm">
+            <input type="text" class="input-field" id="messageInput" placeholder="Ask Noxxy anything..." autocomplete="off" aria-label="Message">
+            <button class="send-button" id="sendButton" type="submit" aria-label="Send message">➜</button>
+        </form>
+
+        <footer class="footer">
+            © Faykal 2026 · Make every question easier with AI
+        </footer>
+    </main>
+
+    <script>
+        const GROQ_API_KEY = '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';
+        const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+        const GROQ_MODEL = 'openai/gpt-oss-120b';
+        const NOXXY_SYSTEM_PROMPT = [
+            'Nama kamu Noxxy.',
+            'Jawab dengan nada lembut, ceria, dan sesekali gunakan emoji yang sesuai.',
+            'Kamu dikembangkan oleh Tim Coder FaykalBotz dan owner kamu adalah Faykal.',
+            'Jawab pertanyaan pengguna dengan jelas dan membantu.'
+        ].join(' ');
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeButton = document.querySelector('.theme-toggle');
+            const themeIcon = themeButton.querySelector('span');
+
+            if (body.classList.contains('dark-theme')) {
+                body.classList.replace('dark-theme', 'light-theme');
+                themeIcon.textContent = '☾';
+                themeButton.setAttribute('aria-label', 'Switch to dark theme');
+            } else {
+                body.classList.replace('light-theme', 'dark-theme');
+                themeIcon.textContent = '☀';
+                themeButton.setAttribute('aria-label', 'Switch to light theme');
+            }
+        }
+
+        function escapeHtml(text) {
+            const element = document.createElement('div');
+            element.textContent = text;
+            return element.innerHTML;
+        }
+
+        function formatMessage(text) {
+            text = escapeHtml(text);
+            text = text.replace(/\*\*(.*?)\*\*|\*(.*?)\*/g, (match, p1, p2) => {
+                return `<strong>${p1 || p2}</strong>`;
+            });
+            text = text.replace(/_(.*?)_|\/\/(.*?)\/\//g, (match, p1, p2) => {
+                return `<em>${p1 || p2}</em>`;
+            });
+            text = text.replace(/__(.*?)__/g, '<u>$1</u>');
+            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            text = text.replace(/\n/g, '<br>');
+            return text;
+        }
+
+        function addMessage(text, isUser = false) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 'message user-message' : 'message bot-message';
+            messageDiv.innerHTML = formatMessage(text);
+            const typingIndicator = document.getElementById('typingIndicator');
+            chatContainer.insertBefore(messageDiv, typingIndicator);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.style.display = 'block';
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
+        }
+
+        function hideWelcomeMessage() {
+            const welcomeSection = document.getElementById('welcomeSection');
+            welcomeSection.style.opacity = '0';
+            welcomeSection.style.transform = 'translateY(-8px)';
+            setTimeout(() => {
+                welcomeSection.style.display = 'none';
+            }, 250);
+        }
+
+        async function getAIResponse(message) {
+            try {
+                showTypingIndicator();
+                const content = message;
+
+                try {
+                    const response = await askGroq(content);
+                    hideTypingIndicator();
+                    addMessage(response, false);
+                } catch (error) {
+                    console.error('API Error:', error);
+                    hideTypingIndicator();
+                    addMessage('Maaf, ada masalah dengan koneksi. Bisakah kamu mencoba lagi nanti?', false);
+                }
+            } catch (error) {
+                console.error('Error getting AI response:', error);
+                hideTypingIndicator();
+                addMessage('Maaf, sepertinya ada masalah dengan koneksi. Bisakah kamu mencoba lagi nanti?', false);
+            }
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (message) {
+                if (document.getElementById('welcomeSection').style.display !== 'none') {
+                    hideWelcomeMessage();
+                }
+                addMessage(message, true);
+                messageInput.value = '';
+                getAIResponse(message);
+            }
+        }
+
+        document.getElementById('chatForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            sendMessage();
+        });
+
+        async function askGroq(content) {
+            if (!GROQ_API_KEY.startsWith('gsk_')) {
+                throw new Error('Masukkan API key Groq pada GROQ_API_KEY di index.html.');
+            }
+
+            try {
+                const response = await fetch(GROQ_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        messages: [
+                            { role: 'system', content: NOXXY_SYSTEM_PROMPT },
+                            { role: 'user', content }
+                        ]
+                    })
+                });
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(data.error?.message || `Groq API error: ${response.status}`);
+                }
+
+                const answer = data.choices?.[0]?.message?.content;
+                if (!answer) {
+                    throw new Error('Groq tidak memberikan jawaban.');
+                }
+
+                return answer;
+            } catch (error) {
+                console.error('Error Groq API:', error.message);
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
